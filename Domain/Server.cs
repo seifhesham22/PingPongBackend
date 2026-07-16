@@ -39,7 +39,7 @@ namespace PingPong.API.Domain
                 ServerIcon = serverIcon,
             };
             
-            server._Memberships.Add(new UserServer(server.Id, ownerId));
+            server._Memberships.Add(UserServer.Create(server.Id, ownerId));
             return server;
         }
 
@@ -50,7 +50,7 @@ namespace PingPong.API.Domain
                 throw new InvalidOperationException("User is already a member of this server.");
             }
 
-            var membership = new UserServer(this.Id, userId);
+            var membership = UserServer.Create(this.Id, userId);
             _Memberships.Add(membership);
             return membership;
         }
@@ -67,6 +67,20 @@ namespace PingPong.API.Domain
 
             _Memberships.Remove(membership);
             return membership;
+        }
+
+        public ServerInvitation CreateInvitation(Guid createdByUserId)
+        {
+            if(!_Memberships.Any(x => x.UserId == createdByUserId))
+                throw new DomainException("User is not a member of this server.");
+
+            var invitation = new ServerInvitation(
+                this.Id,
+                DateTime.UtcNow.AddHours(1),
+                createdByUserId);
+
+            _ServerInvitations.Add(invitation);
+            return invitation;
         }
     }
 }
