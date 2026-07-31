@@ -96,21 +96,3 @@ Features/
   Shared/           Result<T> and Error types
 Migrations/   EF Core migrations
 ```
-
-## Branches
-
-| Branch | Purpose |
-| --- | --- |
-| `master` | Stable |
-| `dev` | Integration branch — features merge here first |
-| `feature/*` | Individual features, branched from `dev` |
-
-## Troubleshooting
-
-**`dotnet ef` not found** — install it globally: `dotnet tool install --global dotnet-ef`
-
-**`Npgsql.NpgsqlException: Connection refused`** — Postgres isn't running, or the connection string in user-secrets points somewhere else. Verify with `dotnet user-secrets list`.
-
-**`ArgumentNullException` on the connection string** — `DefaultConnection` is empty in `appsettings.json` by design; it must be set in user-secrets (step 3).
-
-**HTTPS certificate warning on first run** — trust the dev certificate: `dotnet dev-certs https --trust`
