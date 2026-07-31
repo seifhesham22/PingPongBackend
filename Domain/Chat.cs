@@ -5,8 +5,8 @@ namespace PingPong.API.Domain
     public class Chat
     {
         public Guid Id { get; private set; }
-        private readonly List<ChatMemeber> _ChatMembers = new List<ChatMemeber>();
-        public IReadOnlyCollection<ChatMemeber> ChatMembers => _ChatMembers.AsReadOnly();
+        private readonly List<ChatMember> _ChatMembers = new List<ChatMember>();
+        public IReadOnlyCollection<ChatMember> ChatMembers => _ChatMembers.AsReadOnly();
         private readonly List<Message> _Messages = new List<Message>();
         public IReadOnlyCollection<Message> Messages => _Messages.AsReadOnly();
         public DateTime CreatedAt { get; private set; } = DateTime.UtcNow;
@@ -17,8 +17,8 @@ namespace PingPong.API.Domain
                 throw new DomainException("You can't DM yourself.");
 
             var Chat = new Chat() { Id = Guid.NewGuid(), CreatedAt = DateTime.UtcNow };
-            Chat._ChatMembers.Add(new ChatMemeber(Chat.Id, userA));
-            Chat._ChatMembers.Add(new ChatMemeber(Chat.Id, userB));
+            Chat._ChatMembers.Add(new ChatMember(Chat.Id, userA));
+            Chat._ChatMembers.Add(new ChatMember(Chat.Id, userB));
 
             return Chat;
         }

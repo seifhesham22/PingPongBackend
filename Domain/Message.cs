@@ -16,7 +16,7 @@ namespace PingPong.API.Domain
         public DateTime? DeletedAt { get; set; }
         public Guid? ReplyToId { get; set; }
         public Message? ReplyTo { get; set; }
-        //public ICollection<MessageMention> Mentions { get; set; } = new List<MessageMentions>();
+        public ICollection<MessageMention> Mentions { get; set; } = new List<MessageMention>();
         public ICollection<Reaction> Reactions { get; set; } = new List<Reaction>();
         public ICollection<Attachment> Attachments { get; set; } = new List<Attachment>();
 
