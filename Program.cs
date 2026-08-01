@@ -7,12 +7,15 @@ using Microsoft.Identity.Web;
 using PingPong.API.Data;
 using PingPong.API.Domain;
 using PingPong.API.Features.Authentication;
-using System.Reflection.Metadata.Ecma335;
+using PingPong.API.Features.Shared;
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddDbContext<PingPongDbContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
+
+builder.Services.AddScoped<ICurrentUser, CurrentUser>();
+builder.Services.AddHttpContextAccessor();
 
 builder.Services.AddIdentityApiEndpoints<User>(options =>
 {
