@@ -2,6 +2,10 @@
 
 A chat backend built with ASP.NET Core (.NET 10), EF Core and PostgreSQL, using ASP.NET Identity for authentication.
 
+Copyright (c) 2026 Seif Elmoazen. All rights reserved.
+
+This source is published for viewing only. No permission is granted to use, copy, modify, or distribute it.
+
 ## Prerequisites
 
 | Requirement | Version | Notes |
