@@ -2,6 +2,7 @@ using MediatR;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.EntityFrameworkCore;
+using Npgsql;
 using PingPong.API.Data;
 using PingPong.API.Domain;
 using PingPong.API.Features.Shared;
@@ -53,8 +54,21 @@ namespace PingPong.API.Features.FriendShipFeature.AddNewFriend
 
                 var friendShip = Friendship.Request(requester.Id, addressee.Id);
                 _db.Friendships.Add(friendShip);
-                await _db.SaveChangesAsync(cancellationToken);
 
+                try
+                {
+                    await _db.SaveChangesAsync(cancellationToken);
+
+                }
+                catch (DbUpdateException ex)
+                when (ex.InnerException is Npgsql.PostgresException
+                { SqlState : PostgresErrorCodes.UniqueViolation })
+                {
+                    return Result.Failure(new Error(
+                        "Friendship.AlreadyExists",
+                        "Friendship already exists",
+                        StatusCodes.Status409Conflict));
+                }
                 return Result.Success();
             }
         }
