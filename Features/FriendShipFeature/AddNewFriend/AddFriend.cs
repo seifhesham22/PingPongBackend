@@ -1,5 +1,6 @@
 using MediatR;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Routing;
 using Microsoft.EntityFrameworkCore;
 using PingPong.API.Data;
 using PingPong.API.Domain;
@@ -56,6 +57,25 @@ namespace PingPong.API.Features.FriendShipFeature.AddNewFriend
 
                 return Result.Success();
             }
+        }
+
+        public static void MapEndpoint(RouteGroupBuilder group)
+        {
+            group.MapPost("/requests", async (
+                Command command,
+                ISender sender,
+                CancellationToken cancellationToken) =>
+            {
+                var result = await sender.Send(command, cancellationToken);
+
+                return result.Match(
+                    () => Results.NoContent(),
+                    error => Results.Problem(
+                        title: error.Message,
+                        statusCode: error.StatusCode,
+                        type: error.Code));
+            })
+            .WithName("AddFriend");
         }
     }
 }
