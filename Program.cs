@@ -7,12 +7,19 @@ using Microsoft.Identity.Web;
 using PingPong.API.Data;
 using PingPong.API.Domain;
 using PingPong.API.Features.Authentication;
-using System.Reflection.Metadata.Ecma335;
+using PingPong.API.Features.FriendShipFeature.AddNewFriend;
+using PingPong.API.Features.Shared;
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddDbContext<PingPongDbContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
+
+builder.Services.AddScoped<ICurrentUser, CurrentUser>();
+builder.Services.AddHttpContextAccessor();
+
+builder.Services.AddMediatR(cfg =>
+    cfg.RegisterServicesFromAssembly(typeof(Program).Assembly));
 
 builder.Services.AddIdentityApiEndpoints<User>(options =>
 {
@@ -42,6 +49,13 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
+
+var friendsGroup = app.MapGroup("/friends")
+    .WithTags("Friends")
+    .RequireAuthorization();
+
+AddFriend.MapEndpoint(friendsGroup);
+
 var identityGroup = app.MapGroup("/auth")
     .WithTags("Identity");
 

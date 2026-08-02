@@ -66,7 +66,6 @@ namespace PingPong.API.Data
             .HasForeignKey(m => m.ReplyToId)
             .OnDelete(DeleteBehavior.NoAction);
 
-            // ---- Mentions: a real join table, so "my mentions" is indexed ----
             builder.Entity<MessageMention>().HasIndex(m => m.UserId);
             builder.Entity<MessageMention>().HasIndex(m => m.RoleId);
             builder.Entity<MessageMention>()
@@ -74,7 +73,6 @@ namespace PingPong.API.Data
                     "CK_Mention_UserXorRole",
                     "(\"UserId\" IS NULL) <> (\"RoleId\" IS NULL)"));
 
-            // ---- Many-to-many: UserServer <-> Role ----
             builder.Entity<UserServer>()
                 .HasMany(us => us.Roles)
                 .WithMany(r => r.Members)
@@ -84,44 +82,37 @@ namespace PingPong.API.Data
                 .HasIndex(us => new { us.UserId, us.ServerId })
                 .IsUnique();
 
-            // ---- Uniqueness ----
             builder.Entity<User>().HasIndex(u => u.Email).IsUnique();
             builder.Entity<User>().HasIndex(u => u.UserName).IsUnique();
             builder.Entity<ServerInvitation>().HasIndex(i => i.Token).IsUnique();
 
-            // Friendship: one row per pair, regardless of direction.
-            // Enforce ordering (FirstUserId < SecondUserId) in a DB trigger or at insert time.
             builder.Entity<Friendship>()
-                .HasIndex(f => new { f.RequesterId, f.AddresseeId })
+                .HasIndex(f => new { f.FirstUserId, f.SecondUserId })
                 .IsUnique();
 
             builder.Entity<Friendship>()
-                .HasOne(f => f.Requester).WithMany()
-                .HasForeignKey(f => f.RequesterId)
+                .HasOne(f => f.FirstUser).WithMany()
+                .HasForeignKey(f => f.FirstUserId)
                 .OnDelete(DeleteBehavior.NoAction);
 
             builder.Entity<Friendship>()
-                .HasOne(f => f.Addressee).WithMany()
-                .HasForeignKey(f => f.AddresseeId)
+                .HasOne(f => f.SecondUser).WithMany()
+                .HasForeignKey(f => f.SecondUserId)
                 .OnDelete(DeleteBehavior.NoAction);
 
-            // ---- Reactions: one per user per emoji per message ----
             builder.Entity<Reaction>()
                 .HasIndex(r => new { r.MessageId, r.UserId, r.EmojiCode })
                 .IsUnique();
 
-            // ---- Poll votes: one per user per option ----
             builder.Entity<PollVote>()
                 .HasIndex(v => new { v.PollOptionId, v.UserId })
                 .IsUnique();
 
-            // ---- Unread tracking ----
             builder.Entity<LastReadMessage>().HasIndex(l => new { l.UserId, l.ChannelId }).IsUnique();
             builder.Entity<LastReadMessage>().HasIndex(l => new { l.UserId, l.ChatId }).IsUnique();
 
             builder.Entity<UserDeviceToken>().HasIndex(t => t.Token).IsUnique();
 
-            // ---- Read path: fetching a channel's recent messages ----
             builder.Entity<Message>().HasIndex(m => new { m.ChannelId, m.CreatedAt });
 
             base.OnModelCreating(builder);
