@@ -8,6 +8,7 @@ using PingPong.API.Data;
 using PingPong.API.Domain;
 using PingPong.API.Features.Authentication;
 using PingPong.API.Features.FriendShipFeature.AddNewFriend;
+using PingPong.API.Features.FriendShipFeature.GetMyFriendShipRequests;
 using PingPong.API.Features.Shared;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -55,6 +56,7 @@ var friendsGroup = app.MapGroup("/friends")
     .RequireAuthorization();
 
 AddFriend.MapEndpoint(friendsGroup);
+GetFriendRequests.MapEndpoint(friendsGroup);
 
 var identityGroup = app.MapGroup("/auth")
     .WithTags("Identity");
