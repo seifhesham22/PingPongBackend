@@ -17,7 +17,7 @@ namespace PingPong.API.Features.FriendShipFeature.AcceptFriendShipRequest
         {
             public async Task<Result> Handle(Command request, CancellationToken cancellationToken)
             {
-                var userExists = await _currentUser.UserExistsAsync(request.requesterId);
+                var userExists = await _currentUser.UserExistsAsync(_currentUser.UserId);
                 if (!userExists)
                     return Result.Failure(new Error(
                         "Friendship.RequesterNotFound",
