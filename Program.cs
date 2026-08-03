@@ -7,6 +7,7 @@ using Microsoft.Identity.Web;
 using PingPong.API.Data;
 using PingPong.API.Domain;
 using PingPong.API.Features.Authentication;
+using PingPong.API.Features.FriendShipFeature.AcceptFriendShipRequest;
 using PingPong.API.Features.FriendShipFeature.AddNewFriend;
 using PingPong.API.Features.FriendShipFeature.GetMyFriendShipRequests;
 using PingPong.API.Features.Shared;
@@ -57,6 +58,7 @@ var friendsGroup = app.MapGroup("/friends")
 
 AddFriend.MapEndpoint(friendsGroup);
 GetFriendRequests.MapEndpoint(friendsGroup);
+AcceptFriendShip.MapEndpoint(friendsGroup);
 
 var identityGroup = app.MapGroup("/auth")
     .WithTags("Identity");
