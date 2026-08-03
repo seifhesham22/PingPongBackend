@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using Npgsql;
 using PingPong.API.Data;
 using PingPong.API.Domain;
+using PingPong.API.Exceptions;
 using PingPong.API.Features.Shared;
 
 namespace PingPong.API.Features.FriendShipFeature.AcceptFriendShipRequest
@@ -40,7 +41,7 @@ namespace PingPong.API.Features.FriendShipFeature.AcceptFriendShipRequest
                 {
                     friendship.Accept(_currentUser.UserId);
                 }
-                catch (Exception ex)
+                catch (DomainException ex)
                 {
                     return Result.Failure(new Error(
                         "Friendship.AcceptFailed",
