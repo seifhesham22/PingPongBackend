@@ -49,7 +49,12 @@ namespace PingPong.API.Features.FriendShipFeature.GetMyFriendShipRequests
             endpoints.MapGet("/requests", async ([AsParameters]Query query, ISender sender) =>
             {
                 var result = await sender.Send(query);
-                return result.IsSuccess ? Results.Ok(result.Value) : Results.Problem(result.Error.Message, statusCode: result.Error.StatusCode);
+                return result.Match(
+                    value => Results.Ok(result.Value),
+                    error => Results.Problem(
+                        title: error.Message,
+                        statusCode: error.StatusCode,
+                        type: error.Code));
             })
             .WithName("GetFriendRequests")
             .RequireAuthorization();
