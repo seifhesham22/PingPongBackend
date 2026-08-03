@@ -27,10 +27,11 @@ namespace PingPong.API.Features.FriendShipFeature.AcceptFriendShipRequest
 
                 var (first, second) = Friendship.OrderPair(request.requesterId, _currentUser.UserId);
 
-                var friendship =  await _db.Friendships.Where(x => 
-                x.RequesterId == request.requesterId &&
-                (x.SecondUserId == _currentUser.UserId || x.FirstUserId == _currentUser.UserId))
-                .FirstOrDefaultAsync(cancellationToken);
+                var friendship =  await _db.Friendships.FirstOrDefaultAsync(x => 
+                    x.FirstUserId == first &&
+                    x.SecondUserId == second &&
+                    x.Status == FriendshipStatus.Pending,
+                    cancellationToken);
 
                 if(friendship is null)
                     return Result.Failure(new Error(
