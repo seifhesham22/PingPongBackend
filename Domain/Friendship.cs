@@ -50,7 +50,7 @@ namespace PingPong.API.Domain
             if(actorId != AddresseeId)
                 throw new DomainException("Only the addressee can accept the friendship request.");
 
-            if (Status != FriendshipStatus.Pending)
+            if (Status == FriendshipStatus.Accepted)
                 throw new DomainException("Users are already friends.");
             Status = FriendshipStatus.Accepted;
         }
