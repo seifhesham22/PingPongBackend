@@ -21,31 +21,20 @@ namespace PingPong.API.Features.FriendShipFeature.RejectFriendShipRequest
                     StatusCodes.Status404NotFound));
 
                 var (first, second) = Friendship.OrderPair(_currentUser.UserId, request.requesterId);
-                var friendShip = await _db.Friendships.FirstOrDefaultAsync(
+                var deleted =  await _db.Friendships.Where(
                     x => x.FirstUserId == first &&
                     x.SecondUserId == second &&
                     x.RequesterId == request.requesterId &&
-                    x.Status == FriendshipStatus.Pending,
-                    cancellationToken);
+                    x.Status == FriendshipStatus.Pending)
+                    .ExecuteDeleteAsync(cancellationToken);
 
-                if(friendShip == null)
+                if(deleted == 0)
                 return Result.Failure(new Error(
                     "Friendship.FriendshipNotFound",
                     "friendship request not found",
                     StatusCodes.Status404NotFound));
 
-                _db.Friendships.Remove(friendShip);
-                try
-                {
-                    await _db.SaveChangesAsync(cancellationToken);
-                }
-                catch (DbUpdateConcurrencyException ex)
-                {
-                    return Result.Failure(new Error(
-                   "Friendship.FriendshipNotFound",
-                   "friendship request not found",
-                   StatusCodes.Status404NotFound));
-                }
+                await _db.SaveChangesAsync(cancellationToken);
                 return Result.Success();
             }
         }
@@ -56,7 +45,7 @@ namespace PingPong.API.Features.FriendShipFeature.RejectFriendShipRequest
                 ISender mediator,
                 CancellationToken cancellationToken) =>
             {
-                var result = await mediator.Send(new Command(requesterId));
+                var result = await mediator.Send(new Command(requesterId), cancellationToken);
                 return result.Match(
                     () => Results.NoContent(),
                     error => Results.Problem(
