@@ -15,11 +15,18 @@ namespace PingPong.API.Features.FriendShipFeature.BlockFriendShipRequest
         {
             public async Task<Result> Handle(Command request, CancellationToken cancellationToken)
             {
-                var userExists = await _currentUser.UserExistsAsync(_currentUser.UserId);
-                if (!userExists)
+                var blockerExists = await _currentUser.UserExistsAsync(_currentUser.UserId);
+                if (!blockerExists)
                     return Result.Failure(new Error(
                         "Friendship.RequesterNotFound",
                         "Couldn't find current user.",
+                        StatusCodes.Status404NotFound));
+
+                var blockedExists = await _currentUser.UserExistsAsync(request.toBeBlocked);
+                if (!blockedExists)
+                    return Result.Failure(new Error(
+                        "Friendship.BlockedNotFound",
+                        "Couldn't find the user to be blocked.",
                         StatusCodes.Status404NotFound));
 
                 var (first, second) = Friendship.OrderPair(_currentUser.UserId, request.toBeBlocked);
