@@ -53,7 +53,7 @@ namespace PingPong.API.Features.FriendShipFeature.UnblockFriendShipRequest
                 CancellationToken cancellationToken) =>
             {
                 var result = await sender.Send(new Command(toBeUnblocked), cancellationToken);
-                result.Match(
+                return result.Match(
                     () => Results.NoContent(),
                     error => Results.Problem(
                         title: error.Code,
