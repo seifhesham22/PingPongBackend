@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using PingPong.API.Data;
 using PingPong.API.Domain;
+using PingPong.API.Exceptions;
 using PingPong.API.Features.Shared;
 
 namespace PingPong.API.Features.FriendShipFeature.BlockFriendShipRequest
@@ -34,17 +35,16 @@ namespace PingPong.API.Features.FriendShipFeature.BlockFriendShipRequest
                 try
                 {
                     friendship.Block(_currentUser.UserId);
-                    await _db.SaveChangesAsync(cancellationToken);
-                    return Result.Success();
-
                 }
-                catch (Exception ex)
+                catch (DomainException ex)
                 {
                     return Result.Failure(new Error(
                         "Friendship.BlockFailed",
                         $"Failed to block friendship: {ex.Message}",
-                        StatusCodes.Status500InternalServerError));
+                        StatusCodes.Status409Conflict));
                 }
+                await _db.SaveChangesAsync();
+                return Result.Success();
             }
         }
 
