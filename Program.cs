@@ -4,11 +4,13 @@ using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Identity.Web;
+using Microsoft.OpenApi;
 using PingPong.API.Data;
 using PingPong.API.Domain;
 using PingPong.API.Features.Authentication;
 using PingPong.API.Features.FriendShipFeature.AcceptFriendShipRequest;
 using PingPong.API.Features.FriendShipFeature.AddNewFriend;
+using PingPong.API.Features.FriendShipFeature.BlockFriendShipRequest;
 using PingPong.API.Features.FriendShipFeature.GetMyFriendShipRequests;
 using PingPong.API.Features.FriendShipFeature.RejectFriendShipRequest;
 using PingPong.API.Features.Shared;
@@ -33,7 +35,26 @@ builder.Services.AddIdentityApiEndpoints<User>(options =>
     .AddEntityFrameworkStores<PingPongDbContext>()
     .AddTokenProvider<PhoneNumberTokenProvider<User>>(TokenOptions.DefaultPhoneProvider);
 
-builder.Services.AddSwaggerGen();
+builder.Services.AddSwaggerGen(options =>
+{
+    options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+    {
+        In = ParameterLocation.Header,
+        Description = "Please enter a valid token",
+        Name = "Authorization",
+        Type = SecuritySchemeType.Http,
+        BearerFormat = "JWT",
+        Scheme = "Bearer"
+    });
+
+    options.AddSecurityRequirement(document => new OpenApiSecurityRequirement
+    {
+        {
+            new OpenApiSecuritySchemeReference("Bearer", document),
+            new List<string>()
+        }
+    });
+});
 
 builder.Services.AddTransient<IEmailSender<User>,IdentityEmailSender>();
 
@@ -61,6 +82,7 @@ AddFriend.MapEndpoint(friendsGroup);
 GetFriendRequests.MapEndpoint(friendsGroup);
 AcceptFriendShip.MapEndpoint(friendsGroup);
 RejectFriendShip.MapEndpoint(friendsGroup);
+BlockFriendShip.MapEndpoint(friendsGroup);
 
 var identityGroup = app.MapGroup("/auth")
     .WithTags("Identity");
