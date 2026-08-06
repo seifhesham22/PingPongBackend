@@ -66,6 +66,7 @@ namespace PingPong.API.Domain
                 throw new DomainException("User is not part of this friendship to take action.");
             if (Status == FriendshipStatus.Blocked)
                 throw new DomainException("Friendship is already blocked.");
+
             Status = FriendshipStatus.Blocked;
             BlockedByUserId = actorId;
         }
