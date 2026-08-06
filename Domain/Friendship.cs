@@ -12,7 +12,6 @@ namespace PingPong.API.Domain
         public User SecondUser { get; private set; } = null!;
         public Guid RequesterId { get; private set; }
         public FriendshipStatus Status { get; private set; }
-        public Guid? BlockedByUserId { get; private set; }
         [NotMapped]
         public Guid AddresseeId => RequesterId == FirstUserId ? SecondUserId : FirstUserId;
 
@@ -54,33 +53,9 @@ namespace PingPong.API.Domain
             {
                 throw new DomainException(Status switch { 
                     FriendshipStatus.Accepted => "Users are already friends.",
-                    FriendshipStatus.Blocked => "Cannot accept a blocked friendship request.",
                     _ => "Invalid friendship status." });
             }
             Status = FriendshipStatus.Accepted;
-        }
-
-        public void Block(Guid actorId)
-        {
-            if (!InvolvesUser(actorId))
-                throw new DomainException("User is not part of this friendship to take action.");
-            if (Status == FriendshipStatus.Blocked)
-                throw new DomainException("Friendship is already blocked.");
-
-            Status = FriendshipStatus.Blocked;
-            BlockedByUserId = actorId;
-        }
-
-        public void Unblock(Guid actorId)
-        {
-            if(Status != FriendshipStatus.Blocked)
-                throw new DomainException("Friendship is not blocked.");
-
-            if(actorId != BlockedByUserId)
-                throw new DomainException("Only the user who blocked the friendship can unblock it.");
-
-            Status = FriendshipStatus.Pending;
-            BlockedByUserId = null;
         }
     }
 }
