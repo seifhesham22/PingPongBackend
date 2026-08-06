@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Identity.Client;
 using PingPong.API.Domain;
 
 namespace PingPong.API.Data
@@ -22,7 +23,7 @@ namespace PingPong.API.Data
         public DbSet<MessageMention> MessageMentions => Set<MessageMention>();
         public DbSet<LastReadMessage> LastReadMessages => Set<LastReadMessage>();
         public DbSet<UserDeviceToken> UserDeviceTokens => Set<UserDeviceToken>();
-
+        public DbSet<Block> Blocks => Set<Block>();
         public PingPongDbContext(DbContextOptions<PingPongDbContext> options) : base(options)
         {
         }
@@ -114,6 +115,17 @@ namespace PingPong.API.Data
             builder.Entity<UserDeviceToken>().HasIndex(t => t.Token).IsUnique();
 
             builder.Entity<Message>().HasIndex(m => new { m.ChannelId, m.CreatedAt });
+
+            builder.Entity<Block>().HasIndex(m => new { m.BlockerId, m.BlockedId}).IsUnique();
+            builder.Entity<Block>().HasOne(x => x.Blocker)
+                .WithMany()
+                .HasForeignKey(x => x.BlockerId)
+                .OnDelete(DeleteBehavior.NoAction);
+
+            builder.Entity<Block>().HasOne(x => x.Blocked)
+                .WithMany()
+                .HasForeignKey(x => x.BlockedId)
+                .OnDelete(DeleteBehavior.NoAction);
 
             base.OnModelCreating(builder);
         }

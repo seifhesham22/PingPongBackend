@@ -15,34 +15,48 @@ namespace PingPong.API.Features.FriendShipFeature.AddNewFriend
 
         public sealed class Handler(
             ICurrentUser _currentUser,
-            UserManager<User> _user,
+            UserManager<User> _userManager,
             PingPongDbContext _db) : IRequestHandler<Command, Result>
         {
             public async Task<Result> Handle(Command request, CancellationToken cancellationToken)
             {
-                var userId = _currentUser.UserId;
-
-                var requester = await _user.FindByIdAsync(userId.ToString());
-                if (requester is null)
+                var requesterExists = await _currentUser.UserExistsAsync(_currentUser.UserId);
+                if (!requesterExists)
                     return Result.Failure(new Error(
                         "Friendship.RequesterNotFound",
                         "Couldn't find the current user.",
                         StatusCodes.Status404NotFound));
 
-                var addressee = await _user.FindByNameAsync(request.userName);
+                var addressee = await _userManager.FindByNameAsync(request.userName);
                 if (addressee is null)
                     return Result.Failure(new Error(
                         "Friendship.AddresseeNotFound",
                         "Couldn't find a user with that user name.",
                         StatusCodes.Status404NotFound));
 
-                if (requester.Id == addressee.Id)
-                    return Result.Failure(new Error(
-                        "Friendship.SelfRequest",
-                        "You can't send a friend request to yourself.",
-                        StatusCodes.Status400BadRequest));
+                var BlockedByRequester = await _db.Blocks.AnyAsync(
+                    b => b.BlockerId == _currentUser.UserId &&
+                    b.BlockedId == addressee.Id,
+                    cancellationToken);
 
-                var (first, second) = Friendship.OrderPair(requester.Id, addressee.Id);
+                if (BlockedByRequester)
+                    return Result.Failure(new Error(
+                        "Friendship.IsBlocked",
+                        "You have blocked this user. Unblock him to send a friend request.",
+                        StatusCodes.Status403Forbidden));
+
+                var RequesterBlockedByAddressee = await _db.Blocks.AnyAsync(
+                    b => b.BlockerId == addressee.Id &&
+                    b.BlockedId == _currentUser.UserId,
+                    cancellationToken);
+                
+                if (RequesterBlockedByAddressee)
+                    return Result.Failure(new Error(
+                        "Friendship.IsBlocked",
+                        "Failed to add friend.",
+                        StatusCodes.Status403Forbidden));
+
+                var (first, second) = Friendship.OrderPair(_currentUser.UserId, addressee.Id);
 
                 if (await _db.Friendships.AnyAsync(
                         f => f.FirstUserId == first && f.SecondUserId == second,
@@ -52,7 +66,7 @@ namespace PingPong.API.Features.FriendShipFeature.AddNewFriend
                         "Friendship already exists.",
                         StatusCodes.Status409Conflict));
 
-                var friendShip = Friendship.Request(requester.Id, addressee.Id);
+                var friendShip = Friendship.Request(_currentUser.UserId, addressee.Id);
                 _db.Friendships.Add(friendShip);
 
                 try

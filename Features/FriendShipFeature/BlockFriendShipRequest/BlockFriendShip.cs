@@ -1,5 +1,6 @@
 ﻿using MediatR;
 using Microsoft.EntityFrameworkCore;
+using Npgsql;
 using PingPong.API.Data;
 using PingPong.API.Domain;
 using PingPong.API.Exceptions;
@@ -14,36 +15,50 @@ namespace PingPong.API.Features.FriendShipFeature.BlockFriendShipRequest
         {
             public async Task<Result> Handle(Command request, CancellationToken cancellationToken)
             {
-                var userExists = await _currentUser.UserExistsAsync(_currentUser.UserId);
-                if (!userExists)
+                var blockerExists = await _currentUser.UserExistsAsync(_currentUser.UserId);
+                if (!blockerExists)
                     return Result.Failure(new Error(
                         "Friendship.RequesterNotFound",
                         "Couldn't find current user.",
                         StatusCodes.Status404NotFound));
 
+                var blockedExists = await _currentUser.UserExistsAsync(request.toBeBlocked);
+                if (!blockedExists)
+                    return Result.Failure(new Error(
+                        "Friendship.BlockedNotFound",
+                        "Couldn't find the user to be blocked.",
+                        StatusCodes.Status404NotFound));
+
                 var (first, second) = Friendship.OrderPair(_currentUser.UserId, request.toBeBlocked);
 
-                var friendship = await _db.Friendships
-                    .FirstOrDefaultAsync(x => x.FirstUserId == first && x.SecondUserId == second);
-
-                if (friendship == null)
-                    return Result.Failure(new Error(
-                        "Friendship.NotFound",
-                        "Couldn't find friendship.",
-                        StatusCodes.Status404NotFound));
+                await _db.Friendships
+                    .Where(x => x.FirstUserId == first && x.SecondUserId == second)
+                    .ExecuteDeleteAsync(cancellationToken);
 
                 try
                 {
-                    friendship.Block(_currentUser.UserId);
+                    var block = new Block(blockerId: _currentUser.UserId, blockedId: request.toBeBlocked);
+                    await _db.AddAsync(block, cancellationToken);
                 }
                 catch (DomainException ex)
                 {
                     return Result.Failure(new Error(
                         "Friendship.BlockFailed",
                         $"Failed to block friendship: {ex.Message}",
-                        StatusCodes.Status409Conflict));
+                        StatusCodes.Status400BadRequest));
                 }
-                await _db.SaveChangesAsync();
+
+                try
+                {
+                    await _db.SaveChangesAsync(cancellationToken);
+                }
+                catch (DbUpdateException ex)
+                when (ex.InnerException is PostgresException
+                { SqlState: PostgresErrorCodes.UniqueViolation})
+                {
+                    return Result.Success();
+                }
+
                 return Result.Success();
             }
         }
