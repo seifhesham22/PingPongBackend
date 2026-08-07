@@ -46,7 +46,7 @@ namespace PingPong.API.Features.FriendShipFeature.GetFriendsRequest
 
                 var friends = await query
                     .OrderBy(u => u.UserName)
-                    .Skip((request.Page - 1) * request.PageSize)
+                    .Skip(request.Skip)
                     .Take(request.PageSize)
                     .Select(x => new FriendDto(
                         id: x.Id,
