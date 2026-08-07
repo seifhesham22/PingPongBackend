@@ -24,6 +24,7 @@ namespace PingPong.API.Features.FriendShipFeature.GetMyFriendShipRequests
             public async Task<Result<List<FriendshipRequestDto>>> Handle(Query request, CancellationToken cancellationToken)
             {
                 var userId = _currentUser.UserId;
+
                 var existingUser = await _db.Users.FindAsync(userId);
                 if(existingUser is null)
                     return new Error("UserNotFound", "User not found.", 404);
@@ -43,10 +44,9 @@ namespace PingPong.API.Features.FriendShipFeature.GetMyFriendShipRequests
                 return Result<List<FriendshipRequestDto>>.Success(friendRequests);
             }
         }
-
         public static void MapEndpoint(RouteGroupBuilder endpoints)
         {
-            endpoints.MapGet("/requests", async ([AsParameters]Query query, ISender sender) =>
+            endpoints.MapGet("/requests", async ([AsParameters] Query query, ISender sender) =>
             {
                 var result = await sender.Send(query);
                 return result.Match(
