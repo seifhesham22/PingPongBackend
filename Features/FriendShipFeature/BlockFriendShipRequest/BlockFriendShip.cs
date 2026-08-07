@@ -22,6 +22,12 @@ namespace PingPong.API.Features.FriendShipFeature.BlockFriendShipRequest
                         "Couldn't find current user.",
                         StatusCodes.Status404NotFound));
 
+                if (request.toBeBlocked == _currentUser.UserId)
+                    return Result.Failure(new Error(
+                        "Block.SelfBlock",
+                        "You can't block yourself.",
+                        StatusCodes.Status400BadRequest));
+
                 var blockedExists = await _currentUser.UserExistsAsync(request.toBeBlocked);
                 if (!blockedExists)
                     return Result.Failure(new Error(

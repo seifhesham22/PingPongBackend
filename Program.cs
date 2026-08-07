@@ -14,6 +14,7 @@ using PingPong.API.Features.FriendShipFeature.BlockFriendShipRequest;
 using PingPong.API.Features.FriendShipFeature.GetFriendsRequest;
 using PingPong.API.Features.FriendShipFeature.GetMyFriendShipRequests;
 using PingPong.API.Features.FriendShipFeature.RejectFriendShipRequest;
+using PingPong.API.Features.FriendShipFeature.UnblockFriendShipRequest;
 using PingPong.API.Features.Shared;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -85,6 +86,7 @@ AcceptFriendShip.MapEndpoint(friendsGroup);
 RejectFriendShip.MapEndpoint(friendsGroup);
 BlockFriendShip.MapEndpoint(friendsGroup);
 GetFriends.MapEndpoint(friendsGroup);
+UnblockFriend.MapEndpoint(friendsGroup);
 
 var identityGroup = app.MapGroup("/auth")
     .WithTags("Identity");
