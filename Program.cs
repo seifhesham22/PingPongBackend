@@ -9,15 +9,7 @@ using PingPong.API.Data;
 using PingPong.API.Domain;
 using PingPong.API.Features.Authentication;
 using PingPong.API.Features.FriendShipFeature;
-using PingPong.API.Features.FriendShipFeature.AcceptFriendShipRequest;
-using PingPong.API.Features.FriendShipFeature.AddNewFriend;
-using PingPong.API.Features.FriendShipFeature.BlockFriendShipRequest;
-using PingPong.API.Features.FriendShipFeature.GetFriendsRequest;
-using PingPong.API.Features.FriendShipFeature.GetMyFriendShipRequests;
-using PingPong.API.Features.FriendShipFeature.RejectFriendShipRequest;
-using PingPong.API.Features.FriendShipFeature.UnblockFriendShipRequest;
-using PingPong.API.Features.ServerFeatures.CreateServerRequest;
-using PingPong.API.Features.ServerFeatures.GetMyServersRequest;
+using PingPong.API.Features.ServerFeatures;
 using PingPong.API.Features.Shared;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -80,12 +72,8 @@ app.UseAuthorization();
 app.MapControllers();
 
 app.MapFriendShipEndpoints();
-var serverGroup = app.MapGroup("/server")
-    .WithTags("Servers")
-    .RequireAuthorization();
+app.MapServerEndpoints();
 
-CreateServer.MapEndpoint(serverGroup);
-GetMyServers.MapEndpoint(serverGroup);
 var identityGroup = app.MapGroup("/auth")
     .WithTags("Identity");
 
