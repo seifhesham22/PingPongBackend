@@ -34,6 +34,9 @@ namespace PingPong.API.Domain
 
         public void AddChannel(Channel channel)
         {
+            if (channel.ServerId != ServerId || channel.GroupId != Id)
+                throw new DomainException("Channel doesn't belong to this group");
+
             if (_Channels.Any(c => c.Id == channel.Id))
                 throw new DomainException("Channel already exists in this group.");
 
