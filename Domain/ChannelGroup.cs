@@ -14,11 +14,12 @@ namespace PingPong.API.Domain
 
         private ChannelGroup() { }
 
-        public ChannelGroup(Guid serverId, string name)
+        public ChannelGroup(Guid serverId, string name, int position = 0)
         {
             Id = Guid.NewGuid();
             ServerId = serverId;
             Name = name;
+            Position = position;
         }
 
         public void UpdateName(string name)
@@ -33,7 +34,7 @@ namespace PingPong.API.Domain
 
         public void AddChannel(Channel channel)
         {
-            if (_Channels.Contains(channel))
+            if (_Channels.Any(c => c.Id == channel.Id))
                 throw new DomainException("Channel already exists in this group.");
 
             _Channels.Add(channel);
@@ -41,10 +42,10 @@ namespace PingPong.API.Domain
 
         public void RemoveChannel(Channel channel)
         {
-            if (!_Channels.Contains(channel))
+            var existing = _Channels.FirstOrDefault(c => c.Id == channel.Id) ??
                 throw new DomainException("Channel does not exist in this group.");
 
-            _Channels.Remove(channel);
+            _Channels.Remove(existing);
         }
     }
 }

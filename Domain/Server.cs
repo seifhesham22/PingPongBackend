@@ -82,5 +82,13 @@ namespace PingPong.API.Domain
             _ServerInvitations.Add(invitation);
             return invitation;
         }
+
+        public void AddChannelGroup(ChannelGroup group)
+        {
+            if (_ChannelGroups.Any(g => g.Id == group.Id))
+                throw new DomainException("You already have this channel group");
+
+            _ChannelGroups.Add(group);
+        }
     }
 }
