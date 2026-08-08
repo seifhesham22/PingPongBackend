@@ -8,6 +8,7 @@ using Microsoft.OpenApi;
 using PingPong.API.Data;
 using PingPong.API.Domain;
 using PingPong.API.Features.Authentication;
+using PingPong.API.Features.FriendShipFeature;
 using PingPong.API.Features.FriendShipFeature.AcceptFriendShipRequest;
 using PingPong.API.Features.FriendShipFeature.AddNewFriend;
 using PingPong.API.Features.FriendShipFeature.BlockFriendShipRequest;
@@ -78,18 +79,7 @@ app.UseAuthorization();
 
 app.MapControllers();
 
-var friendsGroup = app.MapGroup("/friends")
-    .WithTags("Friends")
-    .RequireAuthorization();
-
-AddFriend.MapEndpoint(friendsGroup);
-GetFriendRequests.MapEndpoint(friendsGroup);
-AcceptFriendShip.MapEndpoint(friendsGroup);
-RejectFriendShip.MapEndpoint(friendsGroup);
-BlockFriendShip.MapEndpoint(friendsGroup);
-GetFriends.MapEndpoint(friendsGroup);
-UnblockFriend.MapEndpoint(friendsGroup);
-
+app.MapFriendShipEndpoints();
 var serverGroup = app.MapGroup("/server")
     .WithTags("Servers")
     .RequireAuthorization();
