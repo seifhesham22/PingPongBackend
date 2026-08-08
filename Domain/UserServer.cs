@@ -18,7 +18,8 @@
             {
                 Id = Guid.NewGuid(),
                 ServerId = serverId,
-                UserId = userId
+                UserId = userId,
+                JoinedAt = DateTime.UtcNow,
             };
         }
     }
