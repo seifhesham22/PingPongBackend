@@ -26,14 +26,16 @@ namespace PingPong.API.Features.ServerFeatures.GetServerByIdRequest
                 var userId = _currentUser.UserId;
 
                 var server = await _db.Servers.AsNoTracking()
-                    .Where(s => s.Id == request.id && s.Memberships.Any(x => x.Id == request.id
+                    .Where(s => s.Id == request.id && s.Memberships.Any(x => x.ServerId == request.id
                             && x.UserId == userId))
                     .Select(x => new ServerDto(
                         id: x.Id,
                         name: x.Name,
                         serverIcon: x.ServerIcon,
                         //Ungrouped channels
-                        ungroupedChannels: x.Channels.OrderBy(p => p.Position)
+                        ungroupedChannels: x.Channels
+                        .Where(c => c.GroupId == null)
+                        .OrderBy(p => p.Position)
                         .Select(c => new ChannelDto(
                             id: c.Id,
                             name: c.Name,
