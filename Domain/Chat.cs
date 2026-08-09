@@ -10,6 +10,7 @@ namespace PingPong.API.Domain
         private readonly List<Message> _Messages = new List<Message>();
         public IReadOnlyCollection<Message> Messages => _Messages.AsReadOnly();
         public DateTime CreatedAt { get; private set; } = DateTime.UtcNow;
+        public long LastMessageNumber { get; private set; }
 
         public static Chat CreateDirectChat(Guid userA, Guid userB)
         {
@@ -30,12 +31,24 @@ namespace PingPong.API.Domain
             if (!HasMember(senderId))
                 throw new DomainException("User is not a member of this chat.");
 
-            var message = new TextMessage(this.Id, null, senderId, content, NextNumber(), null);
+            if (string.IsNullOrWhiteSpace(content))
+                throw new DomainException("A message can't be empty.");
+
+            if (content.Length > TextMessage.MaxLength)
+                throw new DomainException($"A message can't exceed {TextMessage.MaxLength} characters.");
+
+            LastMessageNumber++;
+
+            var message = new TextMessage(
+                channelId: null,
+                chatId: Id,
+                authorId: senderId,
+                text: content,
+                number: LastMessageNumber,
+                replyToId: null);
+
             _Messages.Add(message);
             return message;
         }
-
-        private long NextNumber() => 
-            Messages.Count == 0 ? 1 : Messages.Max(m => m.Number) + 1;
     }
 }

@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using PingPong.API.Data;
@@ -11,9 +12,11 @@ using PingPong.API.Data;
 namespace PingPong.API.Migrations
 {
     [DbContext(typeof(PingPongDbContext))]
-    partial class PingPongDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260809102941_AddChatLastMessageNumber")]
+    partial class AddChatLastMessageNumber
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
