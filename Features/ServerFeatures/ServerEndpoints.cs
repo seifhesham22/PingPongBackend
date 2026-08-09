@@ -1,5 +1,6 @@
 ﻿using PingPong.API.Features.ServerFeatures.CreateServerRequest;
 using PingPong.API.Features.ServerFeatures.GetMyServersRequest;
+using PingPong.API.Features.ServerFeatures.GetServerByIdRequest;
 
 namespace PingPong.API.Features.ServerFeatures
 {
@@ -13,6 +14,7 @@ namespace PingPong.API.Features.ServerFeatures
 
             CreateServer.MapEndpoint(serverGroup);
             GetMyServers.MapEndpoint(serverGroup);
+            GetServer.MapEndpoint(serverGroup);
         }
     }
 }
