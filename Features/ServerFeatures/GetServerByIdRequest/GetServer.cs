@@ -66,7 +66,7 @@ namespace PingPong.API.Features.ServerFeatures.GetServerByIdRequest
 
         public static void MapEndpoint(RouteGroupBuilder group)
         {
-            group.MapGet("/{guid:id}", async (
+            group.MapGet("/{id:guid}", async (
                 ISender sender,
                 Guid id,
                 CancellationToken cancellationToken) =>
