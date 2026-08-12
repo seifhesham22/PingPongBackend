@@ -34,9 +34,12 @@ namespace PingPong.API.Features.FriendShipFeature.UnFriendRequest
 
         public static void MapEndpoint(RouteGroupBuilder group)
         {
-            group.MapPost("/unfriend/{id}", async (ISender sender, Guid id) =>
+            group.MapPost("/unfriend/{id}", async (
+                ISender sender,
+                Guid id,
+                CancellationToken ct) =>
             {
-                var result = await sender.Send(new Command(id));
+                var result = await sender.Send(new Command(id), ct);
 
                 return result.Match(
                     () => Results.NoContent(),
