@@ -61,6 +61,13 @@ namespace PingPong.API.Data
             builder.Entity<Message>().HasIndex(m => new { m.ChannelId, m.Number }).IsUnique();
             builder.Entity<Message>().HasIndex(m => new { m.ChatId, m.Number }).IsUnique();
 
+            builder.Entity<Chat>()
+                .Property<uint>("Version")
+                .HasColumnName("xmin")
+                .HasColumnType("xid")
+                .ValueGeneratedOnAddOrUpdate()
+                .IsConcurrencyToken();
+
             builder.Entity<Message>()
             .HasOne(m => m.ReplyTo)
             .WithMany()

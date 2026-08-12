@@ -2,6 +2,7 @@
 using PingPong.API.Features.Authentication;
 using PingPong.API.Features.FriendShipFeature;
 using PingPong.API.Features.ServerFeatures;
+using PingPong.API.Features.ChatFeatures;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -21,6 +22,10 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
+// Must come before UseAuthentication: it rewrites the hub handshake's query-string
+// token into a header the Identity bearer scheme can read.
+app.UseHubAuthentication();
+
 app.UseAuthentication();
 app.UseAuthorization();
 
@@ -29,5 +34,6 @@ app.MapControllers();
 app.MapAuthenticationEndpoints();
 app.MapFriendShipEndpoints();
 app.MapServerEndpoints();
+app.MapChatEndpoints();
 
 app.Run();

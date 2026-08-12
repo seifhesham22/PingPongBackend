@@ -29,7 +29,7 @@ namespace PingPong.API.Domain
             long number,
             Guid? replyToId)
         {
-            if((channelId is not null && chatId is null) || (channelId is null && chatId is not null))
+            if ((channelId is null) == (chatId is null))
             {
                 throw new ArgumentException("A message must belong to either a channel or a chat, but not both.");
             }
