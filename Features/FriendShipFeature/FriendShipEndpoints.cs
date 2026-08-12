@@ -5,6 +5,7 @@ using PingPong.API.Features.FriendShipFeature.GetFriendsRequest;
 using PingPong.API.Features.FriendShipFeature.GetMyFriendShipRequests;
 using PingPong.API.Features.FriendShipFeature.RejectFriendShipRequest;
 using PingPong.API.Features.FriendShipFeature.UnblockFriendShipRequest;
+using PingPong.API.Features.FriendShipFeature.UnFriendRequest;
 
 namespace PingPong.API.Features.FriendShipFeature
 {
@@ -23,6 +24,7 @@ namespace PingPong.API.Features.FriendShipFeature
             BlockFriendShip.MapEndpoint(friendsGroup);
             GetFriends.MapEndpoint(friendsGroup);
             UnblockFriend.MapEndpoint(friendsGroup);
+            UnFriend.MapEndpoint(friendsGroup);
         }
     }
 }
