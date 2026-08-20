@@ -30,6 +30,11 @@ namespace PingPong.API.Data
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
+            builder.Entity<User>()
+                .HasIndex(x => x.NormalizedEmail)
+                .HasDatabaseName("Email_Index")
+                .IsUnique();
+
             builder.Entity<Channel>()
             .HasDiscriminator<string>("ChannelType")
             .HasValue<TextChannel>("text")
