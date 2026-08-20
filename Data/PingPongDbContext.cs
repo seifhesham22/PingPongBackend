@@ -121,6 +121,10 @@ namespace PingPong.API.Data
 
             builder.Entity<UserDeviceToken>().HasIndex(t => t.Token).IsUnique();
 
+            builder.Entity<ChatMember>().HasIndex(m => new { m.UserId, m.ChatId }).IsUnique();
+
+            builder.Entity<Chat>().HasIndex(c => new { c.LastMessageAt, c.Id }).IsDescending();
+
             builder.Entity<Message>().HasIndex(m => new { m.ChannelId, m.CreatedAt });
 
             builder.Entity<Block>().HasIndex(m => new { m.BlockerId, m.BlockedId}).IsUnique();
