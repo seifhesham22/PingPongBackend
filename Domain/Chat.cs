@@ -11,13 +11,15 @@ namespace PingPong.API.Domain
         public IReadOnlyCollection<Message> Messages => _Messages.AsReadOnly();
         public DateTime CreatedAt { get; private set; } = DateTime.UtcNow;
         public long LastMessageNumber { get; private set; }
+        public DateTime LastMessageAt { get; private set; } = DateTime.UtcNow;
 
         public static Chat CreateDirectChat(Guid userA, Guid userB)
         {
             if(userA == userB)
                 throw new DomainException("You can't DM yourself.");
 
-            var Chat = new Chat() { Id = Guid.NewGuid(), CreatedAt = DateTime.UtcNow };
+            var now = DateTime.UtcNow;
+            var Chat = new Chat() { Id = Guid.NewGuid(), CreatedAt = now, LastMessageAt = now };
             Chat._ChatMembers.Add(new ChatMember(Chat.Id, userA));
             Chat._ChatMembers.Add(new ChatMember(Chat.Id, userB));
 
@@ -38,6 +40,7 @@ namespace PingPong.API.Domain
                 throw new DomainException($"A message can't exceed {TextMessage.MaxLength} characters.");
 
             LastMessageNumber++;
+            LastMessageAt = DateTime.UtcNow;
 
             var message = new TextMessage(
                 channelId: null,
