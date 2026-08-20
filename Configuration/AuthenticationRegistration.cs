@@ -14,6 +14,7 @@ namespace PingPong.API.Configuration
             {
                 options.Tokens.EmailConfirmationTokenProvider = TokenOptions.DefaultEmailProvider;
                 options.Tokens.PasswordResetTokenProvider = TokenOptions.DefaultPhoneProvider;
+                options.User.RequireUniqueEmail = true;
             })
                 .AddRoles<IdentityRole<Guid>>()
                 .AddEntityFrameworkStores<PingPongDbContext>()
