@@ -11,7 +11,7 @@ namespace PingPong.API.Domain
         public Guid? AvaterFileId { get; private set; }
 
         private readonly List<UserServer> _MemberShips = new List<UserServer>();
-        public IReadOnlyCollection<UserServer> Memberships => _MemberShips.AsReadOnly();
+        public IReadOnlyCollection<UserServer> Memberships => _MemberShips;
 
         private readonly List<Chat> _Chats = new List<Chat>();
         public IReadOnlyCollection<Chat> Chats => _Chats.AsReadOnly();

@@ -1,4 +1,6 @@
-﻿namespace PingPong.API.Domain
+﻿using PingPong.API.Features.ServerFeatures.ServerHelpers;
+
+namespace PingPong.API.Domain
 {
     public class ServerInvitation
     {
@@ -12,12 +14,11 @@
 
         private ServerInvitation() { }
 
-        public ServerInvitation(Guid serverId, DateTime expiresAt, Guid createdByUserId)
+        public ServerInvitation(Guid serverId, Guid createdByUserId)
         {
-            Id = Guid.NewGuid();
             ServerId = serverId;
-            ExpiresAt = expiresAt;
-            Token = Guid.NewGuid().ToString();
+            ExpiresAt = DateTime.UtcNow.AddHours(2);
+            Token = ServerCodeGenerator.GenerateJoinCode();
             CreatedByUserId = createdByUserId;
         }
 

@@ -9,7 +9,14 @@ namespace PingPong.API.Configuration
             this IServiceCollection services, IConfiguration configuration)
         {
             services.AddDbContext<PingPongDbContext>(options =>
-                options.UseNpgsql(configuration.GetConnectionString("DefaultConnection")));
+            {
+                options.UseNpgsql(configuration.GetConnectionString("DefaultConnection"));
+                options
+           .LogTo(Console.WriteLine, LogLevel.Information)
+           .EnableSensitiveDataLogging()   // shows actual parameter values, not just @p0, @p1...
+           .EnableDetailedErrors();
+            }
+                );
 
             return services;
         }

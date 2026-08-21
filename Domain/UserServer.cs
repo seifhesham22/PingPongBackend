@@ -16,7 +16,6 @@
         {
             return new UserServer
             {
-                Id = Guid.NewGuid(),
                 ServerId = serverId,
                 UserId = userId,
                 JoinedAt = DateTime.UtcNow,
