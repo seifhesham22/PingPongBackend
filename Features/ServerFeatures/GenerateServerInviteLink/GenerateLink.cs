@@ -25,8 +25,7 @@ namespace PingPong.API.Features.ServerFeatures.GenerateServerInviteLink
 
                 
                 var server = await _db.Servers
-                    .Include(s => s.Memberships)          
-                    .Include(s => s.ServerInvitations)
+                    .Include(s => s.Memberships)
                     .FirstOrDefaultAsync(s => s.Id == request.serverId, cancellationToken);
 
                 if (server is null)
@@ -38,18 +37,8 @@ namespace PingPong.API.Features.ServerFeatures.GenerateServerInviteLink
 
                 
                 var invitation = server.CreateInvitation(currentUserId);
-                foreach (var entry in _db.ChangeTracker.Entries())
-                {
-                    Console.WriteLine($"Entity: {entry.Entity.GetType().Name}, State: {entry.State}");
+                _db.Add(invitation);
 
-                    if (entry.State == EntityState.Modified)
-                    {
-                        foreach (var prop in entry.Properties.Where(p => p.IsModified))
-                        {
-                            Console.WriteLine($"  {prop.Metadata.Name}: Original={prop.OriginalValue}, Current={prop.CurrentValue}");
-                        }
-                    }
-                }
                 await _db.SaveChangesAsync(cancellationToken);
                 return Result<string>.Success(invitation.Token);
             }

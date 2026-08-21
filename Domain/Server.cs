@@ -45,9 +45,9 @@ namespace PingPong.API.Domain
 
         public UserServer AddMember(Guid userId)
         {
-            if(_Memberships.Any(x => x.UserId == userId))
+            if(IsMember(userId))
             {
-                throw new InvalidOperationException("User is already a member of this server.");
+                throw new DomainException("User is already a member of this server.");
             }
 
             var membership = UserServer.Create(this.Id, userId);
@@ -71,16 +71,10 @@ namespace PingPong.API.Domain
 
         public ServerInvitation CreateInvitation(Guid createdByUserId)
         {
-            if(!_Memberships.Any(x => x.UserId == createdByUserId))
+            if(!IsMember(createdByUserId))
                 throw new DomainException("User is not a member of this server.");
 
-            var invitation = new ServerInvitation(
-                this.Id,
-                DateTime.UtcNow.AddHours(1),
-                createdByUserId);
-
-            _ServerInvitations.Add(invitation);
-            return invitation;
+            return new ServerInvitation(this.Id, createdByUserId);
         }
 
         public void AddChannelGroup(ChannelGroup group)
@@ -92,6 +86,25 @@ namespace PingPong.API.Domain
                 throw new DomainException("You already have this channel group");
 
             _ChannelGroups.Add(group);
+        }
+
+        public UserServer AcceptInvitation(Guid userId, string InvitationToken)
+        {
+            var invitation = _ServerInvitations.FirstOrDefault(x => x.Token == InvitationToken)
+                ?? throw new DomainException("Couldn't find an invitation with this id");
+
+            if (invitation.IsExpired())
+                throw new DomainException("This invitation has expired");
+
+            var userServer = AddMember(userId);
+            return userServer;
+        }
+        private bool IsMember(Guid userId)
+        {
+            if (_Memberships.Any(x => x.UserId == userId))
+                return true;
+
+            return false;
         }
     }
 }
