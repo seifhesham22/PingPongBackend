@@ -1,4 +1,6 @@
-﻿using PingPong.API.Features.ServerFeatures.CreateServerRequest;
+﻿using PingPong.API.Features.ServerFeatures.AcceptInvitationRequest;
+using PingPong.API.Features.ServerFeatures.CreateServerRequest;
+using PingPong.API.Features.ServerFeatures.GenerateServerInviteLink;
 using PingPong.API.Features.ServerFeatures.GetMyServersRequest;
 using PingPong.API.Features.ServerFeatures.GetServerByIdRequest;
 
@@ -15,6 +17,8 @@ namespace PingPong.API.Features.ServerFeatures
             CreateServer.MapEndpoint(serverGroup);
             GetMyServers.MapEndpoint(serverGroup);
             GetServer.MapEndpoint(serverGroup);
+            GenerateLink.MapEndpoints(serverGroup);
+            AcceptInvitation.MapEndpoint(serverGroup);  
         }
     }
 }
