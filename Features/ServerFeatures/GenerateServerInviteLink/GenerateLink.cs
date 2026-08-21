@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using PingPong.API.Data;
 using PingPong.API.Domain;
+using PingPong.API.Exceptions;
 using PingPong.API.Features.Shared;
 
 namespace PingPong.API.Features.ServerFeatures.GenerateServerInviteLink
@@ -34,12 +35,22 @@ namespace PingPong.API.Features.ServerFeatures.GenerateServerInviteLink
                         "Server not found",
                         StatusCodes.Status404NotFound);
 
-
+                ServerInvitation invitation;
+                try
+                {
+                    invitation = server.CreateInvitation(currentUserId);
+                }
+                catch (DomainException ex)
+                {
+                    return new Error(
+                        "Server.UserAlreadyMember",
+                        $"{ex.Message}",
+                        StatusCodes.Status404NotFound);
+                }
                 
-                var invitation = server.CreateInvitation(currentUserId);
-                _db.Add(invitation);
-
+                await _db.ServerInvitations.AddAsync(invitation);
                 await _db.SaveChangesAsync(cancellationToken);
+
                 return Result<string>.Success(invitation.Token);
             }
         }
