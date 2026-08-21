@@ -95,6 +95,27 @@ namespace PingPong.API.Data
                 .HasIndex(us => new { us.UserId, us.ServerId })
                 .IsUnique();
 
+            
+
+
+            foreach (var entityType in builder.Model.GetEntityTypes())
+            {
+                foreach (var navigation in entityType.GetNavigations().Where(n => n.IsCollection))
+                {
+                    navigation.SetPropertyAccessMode(PropertyAccessMode.Field);
+                }
+            }
+            builder.Entity<Server>()
+            .Navigation(x => x.Memberships)
+            .HasField("_Memberships")
+            .UsePropertyAccessMode(PropertyAccessMode.Field);
+
+            builder.Entity<User>()
+            .Navigation(x => x.Memberships)
+            .HasField("_MemberShips")
+            .UsePropertyAccessMode(PropertyAccessMode.Field);
+
+
             builder.Entity<User>().HasIndex(u => u.Email).IsUnique();
             builder.Entity<User>().HasIndex(u => u.UserName).IsUnique();
             builder.Entity<ServerInvitation>().HasIndex(i => i.Token).IsUnique();
