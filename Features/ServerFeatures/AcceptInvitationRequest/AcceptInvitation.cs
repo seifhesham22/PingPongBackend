@@ -47,9 +47,9 @@ namespace PingPong.API.Features.ServerFeatures.AcceptInvitationRequest
 
         public static void MapEndpoint(RouteGroupBuilder group)
         {
-            group.MapPost("/join", async ([FromBody] string token, ISender sender) =>
+            group.MapPost("/join", async ([FromBody] string token, ISender sender, CancellationToken ct) =>
             {
-                var result = await sender.Send(new Command(token));
+                var result = await sender.Send(new Command(token) ,ct);
 
                 return result.Match(
                     () => Results.NoContent(),
