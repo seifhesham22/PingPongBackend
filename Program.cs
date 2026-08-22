@@ -3,6 +3,7 @@ using PingPong.API.Features.Authentication;
 using PingPong.API.Features.FriendShipFeature;
 using PingPong.API.Features.ServerFeatures;
 using PingPong.API.Features.ChatFeatures;
+using PingPong.API.Features.ProfileFeatures;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -28,12 +29,13 @@ app.UseHubAuthentication();
 
 app.UseAuthentication();
 app.UseAuthorization();
-
+app.UseAntiforgery();
 app.MapControllers();
 
 app.MapAuthenticationEndpoints();
 app.MapFriendShipEndpoints();
 app.MapServerEndpoints();
 app.MapChatEndpoints();
+app.MapProfileEndpoints();
 
 app.Run();

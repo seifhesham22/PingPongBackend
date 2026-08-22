@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using PingPong.API.Data;
@@ -11,9 +12,11 @@ using PingPong.API.Data;
 namespace PingPong.API.Migrations
 {
     [DbContext(typeof(PingPongDbContext))]
-    partial class PingPongDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260822114952_Add_File_Enityt")]
+    partial class Add_File_Enityt
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -370,10 +373,15 @@ namespace PingPong.API.Migrations
                     b.Property<Guid>("UserId")
                         .HasColumnType("uuid");
 
+                    b.Property<Guid>("userId")
+                        .HasColumnType("uuid");
+
                     b.HasKey("Id");
 
                     b.HasIndex("UserId")
                         .IsUnique();
+
+                    b.HasIndex("userId");
 
                     b.ToTable("Files");
                 });
@@ -1011,13 +1019,19 @@ namespace PingPong.API.Migrations
 
             modelBuilder.Entity("PingPong.API.Domain.FileMetaData", b =>
                 {
-                    b.HasOne("PingPong.API.Domain.User", "User")
+                    b.HasOne("PingPong.API.Domain.User", null)
                         .WithOne("FileMetaData")
                         .HasForeignKey("PingPong.API.Domain.FileMetaData", "UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("User");
+                    b.HasOne("PingPong.API.Domain.User", "user")
+                        .WithMany()
+                        .HasForeignKey("userId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("user");
                 });
 
             modelBuilder.Entity("PingPong.API.Domain.Friendship", b =>

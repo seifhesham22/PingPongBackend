@@ -24,6 +24,7 @@ namespace PingPong.API.Data
         public DbSet<LastReadMessage> LastReadMessages => Set<LastReadMessage>();
         public DbSet<UserDeviceToken> UserDeviceTokens => Set<UserDeviceToken>();
         public DbSet<Block> Blocks => Set<Block>();
+        public DbSet<FileMetaData> Files => Set<FileMetaData>();
         public PingPongDbContext(DbContextOptions<PingPongDbContext> options) : base(options)
         {
         }
@@ -95,7 +96,8 @@ namespace PingPong.API.Data
                 .HasIndex(us => new { us.UserId, us.ServerId })
                 .IsUnique();
 
-            
+            builder.Entity<User>().HasOne(x => x.FileMetaData)
+                .WithOne(x => x.User).HasForeignKey<FileMetaData>(x => x.UserId);
 
 
             foreach (var entityType in builder.Model.GetEntityTypes())
