@@ -9,7 +9,7 @@ namespace PingPong.API.Domain
     public class User : IdentityUser<Guid>
     {
         public Guid? AvaterFileId { get; private set; }
-
+        public FileMetaData? FileMetaData { get; private set; }
         private readonly List<UserServer> _MemberShips = new List<UserServer>();
         public IReadOnlyCollection<UserServer> Memberships => _MemberShips.AsReadOnly();
 

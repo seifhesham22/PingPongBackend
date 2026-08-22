@@ -11,6 +11,7 @@ namespace PingPong.API.Configuration
 
             services.AddMediatR(cfg =>
                 cfg.RegisterServicesFromAssembly(typeof(Program).Assembly));
+            services.AddAntiforgery();
             services.AddSignalR();
             services.AddControllers();
 
