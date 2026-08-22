@@ -44,7 +44,7 @@ namespace PingPong.API.Features.ProfileFeatures.UploadProfilePhotoRequest
                     userId,
                     request.file.FileName,
                     uniqueName,
-                    $"/uploads/{uniqueName}",
+                    $"/Storage/uploads/{uniqueName}",
                     request.file.ContentType,
                     request.file.Length);
 
