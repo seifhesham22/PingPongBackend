@@ -7,6 +7,16 @@ namespace PingPong.API.Features.Shared
             "Couldn't find this server.",
             StatusCodes.Status404NotFound);
 
+        public static Error MemberNotFound => new(
+            "Server.MemberNotFound",
+            "This user is not a member of the server.",
+            StatusCodes.Status404NotFound);
+
+        public static Error MemberOutranked => new(
+            "Server.MemberOutranked",
+            "You can only manage members ranked below your own.",
+            StatusCodes.Status403Forbidden);
+
         public static Error RoleNotFound => new(
             "Role.NotFound",
             "Couldn't find this role on the server.",

@@ -1,4 +1,6 @@
 using PingPong.API.Features.ServerFeatures.AcceptInvitationRequest;
+using PingPong.API.Features.ServerFeatures.AssignRoleRequest;
+using PingPong.API.Features.ServerFeatures.RemoveRoleRequest;
 using PingPong.API.Features.ServerFeatures.CreateRoleRequest;
 using PingPong.API.Features.ServerFeatures.CreateServerRequest;
 using PingPong.API.Features.ServerFeatures.DeleteRoleRequest;
@@ -26,7 +28,9 @@ namespace PingPong.API.Features.ServerFeatures
             GetRoles.MapEndpoint(serverGroup);
             CreateRole.MapEndpoint(serverGroup);
             DeleteRole.MapEndpoint(serverGroup);
-            UpdateRole.MapEndpoint(serverGroup);  
+            UpdateRole.MapEndpoint(serverGroup);
+            AssignRole.MapEndpoint(serverGroup);
+            RemoveRole.MapEndpoint(serverGroup);  
         }
     }
 }

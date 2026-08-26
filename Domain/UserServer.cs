@@ -34,6 +34,12 @@ namespace PingPong.API.Domain
 
         public void AddToRole(Role role)
         {
+            if (role.ServerId != ServerId)
+                throw new Exceptions.DomainException("This role does not belong to the server.");
+
+            if (_Roles.Any(r => r.Id == role.Id))
+                return;
+
             _Roles.Add(role);
         }
 
