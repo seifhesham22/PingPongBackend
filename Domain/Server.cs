@@ -1,4 +1,4 @@
-﻿
+
 using PingPong.API.Exceptions;
 using System.Runtime.CompilerServices;
 
@@ -111,6 +111,60 @@ namespace PingPong.API.Domain
             var userServer = AddMember(userId);
             return userServer;
         }
+
+        public Role CreateRole(string name, Permissions permissions, int creatorRank, bool isOwner)
+        {
+            if (_ServerRoles.Any(r => r.Name.Equals(name.Trim(), StringComparison.OrdinalIgnoreCase)))
+                throw new DomainException("A role with this name already exists on the server.");
+
+            var highest = _ServerRoles.Count == 0
+                ? Role.EVERY_ONE_POSITION
+                : _ServerRoles.Max(r => r.Position);
+
+            var position = isOwner ? highest + 1 : creatorRank;
+
+            if (position <= Role.EVERY_ONE_POSITION)
+                throw new DomainException("You don't rank high enough to create a role.");
+
+            foreach (var existing in _ServerRoles.Where(r => r.Position >= position))
+                existing.MoveUp();
+
+            var role = Role.Create(this.Id, name, permissions, position);
+            _ServerRoles.Add(role);
+            return role;
+        }
+
+        public Role DeleteRole(Guid roleId)
+        {
+            var role = _ServerRoles.FirstOrDefault(r => r.Id == roleId)
+                ?? throw new DomainException("Couldn't find this role on the server.");
+
+            if (role.IsEveryone)
+                throw new DomainException("The everyone role can't be deleted.");
+
+            foreach (var membership in _Memberships)
+                membership.RemoveFromRole(role);
+
+            _ServerRoles.Remove(role);
+            return role;
+        }
+
+        public Role UpdateRole(Guid roleId, string? name, Permissions? permissions)
+        {
+            var role = _ServerRoles.FirstOrDefault(r => r.Id == roleId)
+                ?? throw new DomainException("Couldn't find this role on the server.");
+
+            if (name is not null &&
+                _ServerRoles.Any(r => r.Id != roleId &&
+                    r.Name.Equals(name.Trim(), StringComparison.OrdinalIgnoreCase)))
+            {
+                throw new DomainException("A role with this name already exists on the server.");
+            }
+
+            role.Update(name, permissions);
+            return role;
+        }
+
         private bool IsMember(Guid userId)
         {
             if (_Memberships.Any(x => x.UserId == userId))
