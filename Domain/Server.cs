@@ -165,6 +165,33 @@ namespace PingPong.API.Domain
             return role;
         }
 
+        public UserServer AssignRole(Guid userId, Guid roleId)
+        {
+            var membership = _Memberships.FirstOrDefault(m => m.UserId == userId)
+                ?? throw new DomainException("User is not a member of this server.");
+
+            var role = _ServerRoles.FirstOrDefault(r => r.Id == roleId)
+                ?? throw new DomainException("Couldn't find this role on the server.");
+
+            membership.AddToRole(role);
+            return membership;
+        }
+
+        public UserServer RemoveRole(Guid userId, Guid roleId)
+        {
+            var membership = _Memberships.FirstOrDefault(m => m.UserId == userId)
+                ?? throw new DomainException("User is not a member of this server.");
+
+            var role = _ServerRoles.FirstOrDefault(r => r.Id == roleId)
+                ?? throw new DomainException("Couldn't find this role on the server.");
+
+            if (role.IsEveryone)
+                throw new DomainException("The everyone role can't be removed from a member.");
+
+            membership.RemoveFromRole(role);
+            return membership;
+        }
+
         private bool IsMember(Guid userId)
         {
             if (_Memberships.Any(x => x.UserId == userId))
