@@ -1,4 +1,4 @@
-﻿using PingPong.API.Features.Shared;
+using PingPong.API.Features.Shared;
 
 namespace PingPong.API.Configuration
 {

@@ -1,4 +1,4 @@
-﻿using MediatR;
+using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Npgsql;
 using PingPong.API.Data;
@@ -49,6 +49,15 @@ namespace PingPong.API.Features.FriendShipFeature.AcceptFriendShipRequest
                         $"Failed to accept friendship request: {ex.Message}",
                         StatusCodes.Status400BadRequest));
                 }
+
+                var chatExists = await _db.ChatMembers.AnyAsync(
+                    mine => mine.UserId == _currentUser.UserId
+                        && mine.Chat.ChatMembers.Any(other => other.UserId == request.requesterId)
+                        && mine.Chat.ChatMembers.Count == 2,
+                    cancellationToken);
+
+                if (!chatExists)
+                    _db.Chats.Add(Chat.CreateDirectChat(_currentUser.UserId, request.requesterId));
 
                 await _db.SaveChangesAsync(cancellationToken);
                 return Result.Success();

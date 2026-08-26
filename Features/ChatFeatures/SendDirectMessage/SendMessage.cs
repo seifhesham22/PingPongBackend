@@ -1,4 +1,4 @@
-﻿using MediatR;
+using MediatR;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
 using PingPong.API.Data;
@@ -17,7 +17,7 @@ namespace PingPong.API.Features.ChatFeatures.SendDirectMessage
         public sealed class Handler(
             PingPongDbContext _db,
             ICurrentUser _currentUser,
-            IHubContext<DirectChatHub, IChatClient> _hub) : IRequestHandler<Command, Result<MessageDto>>
+            IHubContext<ChatHub, IChatClient> _hub) : IRequestHandler<Command, Result<MessageDto>>
         {
             private const int MAXATTEMPTS = 3;
             public async Task<Result<MessageDto>> Handle(Command request, CancellationToken cancellationToken)
@@ -70,7 +70,7 @@ namespace PingPong.API.Features.ChatFeatures.SendDirectMessage
                        message.Number, message.CreatedAt);
 
                     await _hub.Clients
-                        .Group(DirectChatHub.ChatGroup(chat.Id))
+                        .Users([userId.ToString(), otherUserId.ToString()])
                         .ReceiveMessage(dto);
 
                     return Result<MessageDto>.Success(dto);
