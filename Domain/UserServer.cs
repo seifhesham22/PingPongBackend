@@ -21,5 +21,10 @@
                 JoinedAt = DateTime.UtcNow,
             };
         }
+
+        public void AddToRole(Role role)
+        {
+            _Roles.Add(role);
+        }
     }
 }

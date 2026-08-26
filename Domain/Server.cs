@@ -1,5 +1,6 @@
 ﻿
 using PingPong.API.Exceptions;
+using System.Runtime.CompilerServices;
 
 namespace PingPong.API.Domain
 {
@@ -38,8 +39,14 @@ namespace PingPong.API.Domain
                 OwnerId = ownerId,
                 ServerIcon = serverIcon,
             };
-            
-            server._Memberships.Add(UserServer.Create(server.Id, ownerId));
+
+            var everyOne = Role.CreateEveryOne(server.Id);
+            server._ServerRoles.Add(everyOne);
+
+            var owner = UserServer.Create(server.Id, ownerId);
+            owner.AddToRole(everyOne);
+
+            server._Memberships.Add(owner);
             return server;
         }
 
@@ -51,7 +58,12 @@ namespace PingPong.API.Domain
             }
 
             var membership = UserServer.Create(this.Id, userId);
+            
+            var everyOneRole = _ServerRoles.First(x => x.IsEveryone == true);
+
+            membership.AddToRole(everyOneRole);
             _Memberships.Add(membership);
+
             return membership;
         }
 

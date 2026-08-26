@@ -56,8 +56,8 @@ namespace PingPong.API.Data
 
             builder.Entity<Role>()
             .HasIndex(r => r.ServerId)
-            .IsUnique();
-            //.HasFilter("\"IsEveryone\" = true");
+            .IsUnique()
+            .HasFilter("\"IsEveryone\" = true");
 
             builder.Entity<Message>()
             .ToTable(t => t.HasCheckConstraint(
