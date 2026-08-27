@@ -1,5 +1,6 @@
 using PingPong.API.Features.ChatFeatures.Hubs;
 using PingPong.API.Features.ChatFeatures.GetChatsRequest;
+using PingPong.API.Features.ChatFeatures.GetMessagesRequest;
 using PingPong.API.Features.ChatFeatures.SendDirectMessage;
 
 namespace PingPong.API.Features.ChatFeatures
@@ -13,6 +14,7 @@ namespace PingPong.API.Features.ChatFeatures
                 .RequireAuthorization();
 
             GetChats.MapEndpoint(chatGroup);
+            GetMessages.MapEndpoint(chatGroup);
             SendMessage.MapEndpoint(chatGroup);
             app.MapHub<ChatHub>("/hubs/chat");
         }
