@@ -1,4 +1,4 @@
 <Solution>
-  <Project Path="../PingPong.Tests/PingPong.Tests.csproj" Id="1790d5c8-e80d-4429-b4a1-4fd3fa803830" />
   <Project Path="PingPong.API.csproj" />
+  <Project Path="tests/PingPong.Tests/PingPong.Tests.csproj" />
 </Solution>
