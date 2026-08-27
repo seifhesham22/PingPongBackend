@@ -1,6 +1,6 @@
 ﻿namespace PingPong.API.Domain
 {
-    public sealed class ChatMemeber
+    public sealed class ChatMember
     {
         public Guid Id { get; private set; }
         public Guid ChatId { get; private set; }
@@ -10,8 +10,8 @@
         public DateTime JoinedAt { get; private set; }
         public bool IsMuted { get; private set; }
 
-        private ChatMemeber() { }
-        public ChatMemeber(Guid chatId, Guid userId)
+        private ChatMember() { }
+        public ChatMember(Guid chatId, Guid userId)
         {
             Id = Guid.NewGuid();
             ChatId = chatId;

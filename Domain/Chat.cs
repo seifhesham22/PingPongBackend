@@ -5,20 +5,23 @@ namespace PingPong.API.Domain
     public class Chat
     {
         public Guid Id { get; private set; }
-        private readonly List<ChatMemeber> _ChatMembers = new List<ChatMemeber>();
-        public IReadOnlyCollection<ChatMemeber> ChatMembers => _ChatMembers.AsReadOnly();
+        private readonly List<ChatMember> _ChatMembers = new List<ChatMember>();
+        public IReadOnlyCollection<ChatMember> ChatMembers => _ChatMembers.AsReadOnly();
         private readonly List<Message> _Messages = new List<Message>();
         public IReadOnlyCollection<Message> Messages => _Messages.AsReadOnly();
         public DateTime CreatedAt { get; private set; } = DateTime.UtcNow;
+        public long LastMessageNumber { get; private set; }
+        public DateTime LastMessageAt { get; private set; } = DateTime.UtcNow;
 
         public static Chat CreateDirectChat(Guid userA, Guid userB)
         {
             if(userA == userB)
                 throw new DomainException("You can't DM yourself.");
 
-            var Chat = new Chat() { Id = Guid.NewGuid(), CreatedAt = DateTime.UtcNow };
-            Chat._ChatMembers.Add(new ChatMemeber(Chat.Id, userA));
-            Chat._ChatMembers.Add(new ChatMemeber(Chat.Id, userB));
+            var now = DateTime.UtcNow;
+            var Chat = new Chat() { Id = Guid.NewGuid(), CreatedAt = now, LastMessageAt = now };
+            Chat._ChatMembers.Add(new ChatMember(Chat.Id, userA));
+            Chat._ChatMembers.Add(new ChatMember(Chat.Id, userB));
 
             return Chat;
         }
@@ -30,12 +33,25 @@ namespace PingPong.API.Domain
             if (!HasMember(senderId))
                 throw new DomainException("User is not a member of this chat.");
 
-            var message = new TextMessage(this.Id, null, senderId, content, NextNumber(), null);
+            if (string.IsNullOrWhiteSpace(content))
+                throw new DomainException("A message can't be empty.");
+
+            if (content.Length > TextMessage.MaxLength)
+                throw new DomainException($"A message can't exceed {TextMessage.MaxLength} characters.");
+
+            LastMessageNumber++;
+            LastMessageAt = DateTime.UtcNow;
+
+            var message = new TextMessage(
+                channelId: null,
+                chatId: Id,
+                authorId: senderId,
+                text: content,
+                number: LastMessageNumber,
+                replyToId: null);
+
             _Messages.Add(message);
             return message;
         }
-
-        private long NextNumber() => 
-            Messages.Count == 0 ? 1 : Messages.Max(m => m.Number) + 1;
     }
 }

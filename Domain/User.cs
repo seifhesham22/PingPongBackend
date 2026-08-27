@@ -1,13 +1,15 @@
 ﻿using Microsoft.AspNetCore.Identity;
-using Microsoft.EntityFrameworkCore.Query.Internal;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
+using PingPong.API.Domain;
 using PingPong.API.Exceptions;
 
 namespace PingPong.API.Domain
 {
-    public class User : IdentityUser
+    public class User : IdentityUser<Guid>
     {
         public Guid? AvaterFileId { get; private set; }
-
+        public FileMetaData? FileMetaData { get; private set; }
         private readonly List<UserServer> _MemberShips = new List<UserServer>();
         public IReadOnlyCollection<UserServer> Memberships => _MemberShips.AsReadOnly();
 
@@ -17,7 +19,14 @@ namespace PingPong.API.Domain
         private readonly List<UserDeviceToken> _DeviceTokens = new List<UserDeviceToken>();
         public IReadOnlyCollection<UserDeviceToken> DeviceTokens => _DeviceTokens.AsReadOnly();
 
-        private User() { }
+        public User() { }
+
+        public User(string email, string userName)
+        {
+            Id = Guid.NewGuid();
+            Email = email;
+            UserName = userName; // properties that are inhereted from the base class IdentityUser<Guid>
+        }
 
         public void UpdateAvatar(Guid newAvatarId)
         {

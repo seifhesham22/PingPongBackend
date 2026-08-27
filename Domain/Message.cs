@@ -16,7 +16,7 @@ namespace PingPong.API.Domain
         public DateTime? DeletedAt { get; set; }
         public Guid? ReplyToId { get; set; }
         public Message? ReplyTo { get; set; }
-        //public ICollection<MessageMention> Mentions { get; set; } = new List<MessageMentions>();
+        public ICollection<MessageMention> Mentions { get; set; } = new List<MessageMention>();
         public ICollection<Reaction> Reactions { get; set; } = new List<Reaction>();
         public ICollection<Attachment> Attachments { get; set; } = new List<Attachment>();
 
@@ -29,7 +29,7 @@ namespace PingPong.API.Domain
             long number,
             Guid? replyToId)
         {
-            if((channelId is not null && chatId is null) || (channelId is null && chatId is not null))
+            if ((channelId is null) == (chatId is null))
             {
                 throw new ArgumentException("A message must belong to either a channel or a chat, but not both.");
             }
